@@ -1,5 +1,7 @@
 package com.example.filetestapp
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -8,20 +10,74 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 // https://www.codevoila.com/post/46/android-tutorial-android-external-storage - Reference URL for Java Source Code
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = MainActivity::class.qualifiedName
+    private val REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG, "File Test App onCreate() method called.")
+        checkReadWritePermission()
+    }
+
+    private fun checkReadWritePermission() {
+        Log.d(TAG, "File Test App checkReadWritePermission() method called.")
+        // Check whether this app has write external storage permission or not.
+        val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        // If do not grant write external storage permission.
+        if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "File Test App requestPermissions() method called.")
+            // Request user to grant write external storage permission.
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        Log.d(TAG, "File Test App onRequestPermissionsResult() method called.")
+        when (requestCode) {
+            REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION -> {
+                if (grantResults.size > 0 && permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, R.string.granted_write_external_storage_permission.toString())
+                        Toast.makeText(
+                            this,
+                            R.string.granted_write_external_storage_permission,
+                            Toast.LENGTH_LONG
+                        ).show();
+                    } else {
+                        Log.d(TAG, R.string.denied_write_external_storage_permission.toString())
+                        Toast.makeText(
+                            this,
+                            R.string.denied_write_external_storage_permission,
+                            Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+
+            }
+        }
     }
 
     private fun checkSDCardStatus(): Boolean {

@@ -8,5 +8,7 @@
     <string name="write_to_external_cache_dir">Write To External Cache Directory</string>
     <string name="get_external_storage_public_directory">Get External Storage Public Directory</string>
     <string name="write_to_external_storage_public_directory">Write To External Storage Public Directory</string>
+    <string name="granted_write_external_storage_permission">You grant write external storage permission. Please continue...</string>
+    <string name="denied_write_external_storage_permission">You denied write external storage permission...!!!</string>
     <string name="no_match_found">No Match Found</string>
 </resources>
